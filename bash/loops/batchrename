@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Description Batch rename files
+for file in *.txt; do
+    [[ -f "$file" ]] || continue
+    newname="backup_${file}"
+    mv "$file" "$newname"
+done

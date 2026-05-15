@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Description: list all dotfiles
+# loop throught files in ~/dotfiles, skip if not dotfiles, and print each filename
+
+for file in ~/dotfiles/*; do
+	[[ -f "$file" ]] || continue
+	echo "$file"
+done
