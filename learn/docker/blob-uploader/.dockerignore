@@ -1,0 +1,17 @@
+# .dockerignore
+# Exclude source control metadata
+.git/
+
+# Exclude runtime metrics and application logs
+*.log
+
+# Exclude local secrets and infrastructure configurations
+.env
+
+# Exclude build definition scripts
+Dockerfile
+.dockerignore
+
+# Exclude editor swap files and temporary artifacts
+*.swp
+*~

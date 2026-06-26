@@ -1,0 +1,7 @@
+FROM netboxcommunity/netbox:v4.6-5.0.1
+
+COPY configuration/plugins.py /etc/netbox/config/plugins.py
+
+COPY plugin_requirements.txt /opt/netbox/plugin_requirements.txt
+
+RUN /usr/local/bin/uv pip install -r /opt/netbox/plugin_requirements.txt
