@@ -1,10 +1,10 @@
 # Module: Reverse Proxy Infrastructure (MIG + HTTP(S) LB + Cloud Armor)
 
-This experiment provisions a highly scalable, secure reverse proxy architecture on Google Cloud Platform. It strings together an Instance Template (using a dedicated service account and KMS integration), a Managed Instance Group (MIG), an External HTTP(S) Load Balancer with custom health checks, and a Cloud Armor Security Policy acting as a web application firewall perimeter.
+In this experiment, I provision a highly scalable, secure reverse proxy architecture on Google Cloud Platform. I string together an Instance Template (using a dedicated service account and KMS integration), a Managed Instance Group (MIG), an External HTTP(S) Load Balancer with custom health checks, and a Cloud Armor Security Policy acting as a web application firewall perimeter.
 
 ## Usage
 
-I use this pattern to build a production-ready edge routing layer that scales automatically based on incoming request metrics while protecting backend servers from unapproved external IP addresses:
+I use this pattern to build a production-ready edge routing layer that scales automatically based on incoming request metrics while protecting my backend servers from unapproved external IP addresses:
 
 ```hcl
 module "secure_reverse_proxy" {
