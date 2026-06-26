@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Description: skip the hidden files, and process the files 
-
-for file in .* *; do
-    [[ "$file" == .* ]] && echo "Hidden file: $file skipped" && continue
-    [[ -f "$file" ]] || continue
-    echo "Processing: $file"
-done
