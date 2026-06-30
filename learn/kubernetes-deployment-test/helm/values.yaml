@@ -1,0 +1,5 @@
+replicaCount: 2
+image:
+  tag: 'v1.68.0'
+podLabels:
+  testing: latestversion
