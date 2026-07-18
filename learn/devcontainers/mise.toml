@@ -1,0 +1,7 @@
+[tools]
+terraform = "latest"
+terraform-docs = "latest"
+azure = "latest"
+azure-cli = "latest"
+pipx = "latest"
+python = "latest"

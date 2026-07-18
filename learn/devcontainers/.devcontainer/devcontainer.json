@@ -1,0 +1,14 @@
+{
+  "build": {
+    "context": "..",
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": "scripts/setup",
+  // 1. Tell Podman to allow container access using SELinux relabeling (:Z)
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,Z",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  // 2. Ensure Podman aligns your host UID with the container's user
+  "runArgs": [
+    "--userns=keep-id"
+  ]
+}
