@@ -1,0 +1,137 @@
+services:
+  bookstack-app:
+    image: lscr.io/linuxserver/bookstack:26.05.2
+    container_name: bookstack-app
+    hostname: bookstack-app
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-Europe/Paris}
+      - APP_URL=${APP_URL}
+      - APP_KEY=${APP_KEY}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_ENV=${APP_ENV:-production}
+      - APP_LANG=${APP_LANG:-fr}
+      - DB_HOST=bookstack-db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - REDIS_SERVERS=bookstack-redis:6379:0:${REDIS_PASSWORD}
+      - APP_PROXIES=${APP_PROXIES:-*}
+      - APP_FORCE_HTTPS=${APP_FORCE_HTTPS:-true}
+      - AUTH_METHOD=${AUTH_METHOD}
+    volumes:
+      - ${DATA_PATH}/data/app/bookstack/uploads:/config/www/public/uploads
+      - ${DATA_PATH}/data/app/bookstack/storage:/config/www/storage/uploads
+    networks:
+      - bookstack-internal
+      - nginx-proxy
+    depends_on:
+      bookstack-db:
+        condition: service_healthy
+      bookstack-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:80/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1024M
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  bookstack-db:
+    image: mariadb:12.3.2
+    container_name: bookstack-db
+    hostname: bookstack-db
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=${DB_DATABASE}
+      - MARIADB_USER=${DB_USERNAME}
+      - MARIADB_PASSWORD=${DB_PASSWORD}
+      - TZ=${TZ:-Europe/Paris}
+    volumes:
+      - ${DATA_PATH}/data/app/mariadb/data:/var/lib/mysql
+    networks:
+      - bookstack-internal
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-buffer-pool-size=256M
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1024M
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+  bookstack-redis:
+    image: redis:8.8-alpine
+    container_name: bookstack-redis
+    hostname: bookstack-redis
+    restart: unless-stopped
+    environment:
+      - REDISCLI_AUTH=${REDIS_PASSWORD}
+    volumes:
+      - ${DATA_PATH}/data/app/redis/data:/data
+    networks:
+      - bookstack-internal
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes --maxmemory 200mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=32M,mode=1777
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+networks:
+  bookstack-internal:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.28.10.0/24
+
+  nginx-proxy:
+    external: true
+    name: ${NGINX_NETWORK:-nginx-proxy}

@@ -1,0 +1,9 @@
+services:
+  nginx:
+    networks:
+      - frontend
+      - backend
+
+  app:
+    networks:
+      - backend

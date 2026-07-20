@@ -1,0 +1,9 @@
+services:
+  db:
+    image: mariadb:12.3.2
+
+  app:
+    image: my-app
+    depends_on:
+      database:
+        condition: service_healthy
