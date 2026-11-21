@@ -25,7 +25,6 @@ Terraform patterns, experiments, runbooks and small tools from my work and my ho
 | [gcp-firewall-rules](experiments/gcp-firewall-rules) | VPC firewall rules | Work |
 | [gcp-mig-with-lb](experiments/gcp-mig-with-lb) | Managed Instance Group behind a load balancer | Work |
 | [netbox](experiments/netbox) | NetBox prefixes and aggregates managed with Terraform | Work |
-| [k8s-basics](experiments/k8s-basics) | First Pods and Deployments, rollout strategies | Exercise |
 
 ## Runbooks
 
