@@ -3,7 +3,7 @@
 Terraform patterns, experiments, runbooks and small tools from my work and my homelab.
 
 - **Work**: patterns and setups I built on the job, sanitized (no names, IDs or real addresses).
-- **Homelab**: runbooks from my K3s cluster, [dell-cluster](https://github.com/alexandreachard/dell-cluster).
+- **Homelab**: runbooks from my K3s cluster, [k3s-gitops-homelab](https://github.com/alexandreachard/k3s-gitops-homelab).
 - **Lab / exercise**: things I built to learn.
 
 ## Patterns

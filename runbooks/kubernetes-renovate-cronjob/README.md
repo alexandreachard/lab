@@ -95,7 +95,7 @@ sops --encrypt --in-place \
 
 ### 3. Update the Target Repository in CronJob
 
-In `manifests/cronjob.yaml`, replace `<GITUSER/REPO>` with your actual repository path (e.g. `alexandreachard/dell-cluster`):
+In `manifests/cronjob.yaml`, replace `<GITUSER/REPO>` with your actual repository path (e.g. `alexandreachard/k3s-gitops-homelab`):
 
 ```yaml
 spec:
