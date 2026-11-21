@@ -1,55 +1,49 @@
-# Lab
+# lab
 
-Personal engineering lab for prototyping, testing, breaking, and documenting cloud infrastructure, automation, and platform engineering patterns.
+Terraform patterns, experiments, runbooks and small tools from my work and my homelab.
 
----
+- **Work**: patterns and setups I built on the job, sanitized (no names, IDs or real addresses).
+- **Homelab**: runbooks from my K3s cluster, [dell-cluster](https://github.com/alexandreachard/dell-cluster).
+- **Lab / exercise**: things I built to learn.
 
-## What's Inside
+## Patterns
 
-### Patterns
-Reusable infrastructure patterns and reference architectures refined from real-world implementations:
-- **[Terraform Modern State Refactoring](patterns/terraform-state-refactoring)** — Zero-downtime refactoring and declarative unmanagement using native HCL `moved {}` (TF 1.1+) and `removed {}` (TF 1.7+) blocks on Azure workloads.
-- **[Azure Enterprise Governance](patterns/azure-enterprise-governance)** — Management group hierarchy, policy assignments, and subscription-level governance controls.
-- **[Private Endpoint Factory](patterns/private-endpoint-factory)** — Modular Terraform pattern for provisioning Azure Private Endpoints with automated Private DNS Zone integration.
-- **[Terraform Modules](patterns/terraform-modules)** — Reusable modules for Azure Container Apps (ACA), virtual networking, Private DNS Zones, and Private Endpoints.
+| Item | What it is | Origin |
+| :-- | :-- | :-- |
+| [azure-enterprise-governance](patterns/azure-enterprise-governance) | Management group hierarchy and policy assignments | Work |
+| [private-endpoint-factory](patterns/private-endpoint-factory) | Private Endpoints with Private DNS Zone integration | Work |
+| [terraform-modules](patterns/terraform-modules) | Modules for Container Apps, networking, Private DNS Zones, Private Endpoints | Work |
+| [terraform-state-refactoring](patterns/terraform-state-refactoring) | Refactoring with `moved {}` and `removed {}` blocks instead of `terraform state` commands | Lab (Terraform Associate prep) |
 
-### Experiments
-Hands-on explorations of cloud services, security boundaries, and infrastructure prototypes:
-- **[Azure RAG Network Isolation](experiments/azure-rag-network-isolation)** — Securing Retrieval-Augmented Generation architectures with Private Endpoints and strict network perimeter isolation.
-- **[GCP Classic VPN](experiments/gcp-classic-vpn)** — Site-to-site IPsec VPN connectivity on Google Cloud Platform.
-- **[GCP Compute & Networking](experiments/gcp-compute-instance)** — Compute instances, custom firewall rules, and Managed Instance Groups (MIG) behind load balancers.
-- **[Netbox](experiments/netbox)** — Network Source of Truth (NSoT) deployment and testing.
+## Experiments
 
-### Runbooks
-Operational procedures and repeatable production guides documented as code:
-- **[Renovate Bot Kubernetes CronJob](runbooks/kubernetes-renovate-cronjob)** — Self-hosted Renovate bot running as a native Kubernetes `CronJob`, automated with FluxCD and secured with Mozilla SOPS/Age.
-- **[K3s Traefik Ingress & TLS](runbooks/k3s-traefik-ingress-tls)** — Internal service exposition on K3s using native Traefik, namespace-scoped TLS certificates, SAN generation, and local DNS resolution.
-- **[HA Cloudflare Tunnels on Kubernetes](runbooks/cloudflare-tunnels-kubernetes)** — Outbound-only, zero-open-port public exposition using high-availability (2 replicas, 8 Anycast connections) `cloudflared` agents.
-- **[Netbox Updates](runbooks/netbox-updates)** — Maintenance and container update workflows for Netbox instances.
+| Item | What it is | Origin |
+| :-- | :-- | :-- |
+| [azure-rag-network-isolation](experiments/azure-rag-network-isolation) | Network isolation of a RAG architecture with Private Endpoints | Work |
+| [gcp-classic-vpn](experiments/gcp-classic-vpn) | Site-to-site IPsec VPN on GCP | Work |
+| [gcp-compute-instance](experiments/gcp-compute-instance) | Compute Engine instances | Work |
+| [gcp-firewall-rules](experiments/gcp-firewall-rules) | VPC firewall rules | Work |
+| [gcp-mig-with-lb](experiments/gcp-mig-with-lb) | Managed Instance Group behind a load balancer | Work |
+| [netbox](experiments/netbox) | NetBox prefixes and aggregates managed with Terraform | Work |
+| [k8s-basics](experiments/k8s-basics) | First Pods and Deployments, rollout strategies | Exercise |
 
-### Tools
-Lightweight utilities built to solve specific platform engineering operational challenges:
-- **[Azure Subscription Batch Manager](tools/azure-subscription-manager)** — PowerShell automation to batch rename and migrate Azure subscriptions into target Management Groups without Tenant Root Group admin rights.
-- **[Azure Blob Uploader](tools/azure-blob-uploader)** — Containerized CLI tool for automated uploads to Azure Blob Storage containers.
+## Runbooks
 
-### Snippets
-Quick-reference snippets and foundational learning sandboxes:
-- **Bash** — Scripting fundamentals and automation patterns.
-- **Dev Containers** — Standardized containerized developer environments managed with `mise`.
-- **Docker** — Multi-container stacks, healthchecks, networking, and reverse proxy patterns.
-- **Kubernetes Playground** — Application manifests and foundational cluster configurations.
+| Item | What it is | Origin |
+| :-- | :-- | :-- |
+| [kubernetes-renovate-cronjob](runbooks/kubernetes-renovate-cronjob) | Self-hosted Renovate as a Kubernetes CronJob, with Flux and SOPS | Homelab |
+| [k3s-traefik-ingress-tls](runbooks/k3s-traefik-ingress-tls) | Exposing services on K3s with Traefik and TLS | Homelab |
+| [cloudflare-tunnels-kubernetes](runbooks/cloudflare-tunnels-kubernetes) | Public access through Cloudflare Tunnel, no open port | Homelab |
+| [netbox-updates](runbooks/netbox-updates) | Updating a containerized NetBox | Work |
 
----
+## Tools
 
-## Technical Stack
+| Item | What it is | Origin |
+| :-- | :-- | :-- |
+| [azure-subscription-manager](tools/azure-subscription-manager) | PowerShell: batch rename subscriptions and move them into management groups | Work |
+| [azure-blob-uploader](tools/azure-blob-uploader) | Containerized script to upload files to Blob Storage | Lab |
 
-- **IaC & Automation:** Terraform (HCL), FluxCD (GitOps), Mozilla SOPS, Age, Kustomize, Helm
-- **Cloud & Virtualization:** Microsoft Azure, Google Cloud Platform (GCP), Kubernetes (K3s), Docker
-- **Networking & Security:** Traefik, Cloudflare Tunnels (`cloudflared`), WireGuard, Private Endpoints, DNS
-- **Languages & Scripting:** Bash, PowerShell, Python
+## Snippets
 
----
-
-## Purpose
-
-This lab is where I prototype, validate, and stress-test infrastructure patterns before applying them to production or portfolio repositories (such as [`dell-cluster`](https://github.com/alexandreachard/dell-cluster)). It reflects a hands-on platform craftsmanship philosophy: understanding system mechanics from the kernel to the cloud control plane.
+Learning sandboxes: [bash](snippets/bash), [docker](snippets/docker) (healthchecks, networking, persistence, reverse proxy...),
+[devcontainers](snippets/devcontainers) (mise), [kubernetes-playground](snippets/kubernetes-playground).
