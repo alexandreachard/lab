@@ -12,3 +12,8 @@ variable "prod_subscription_id" {
   type        = string
   description = "The target subscription ID for production workloads"
 }
+
+variable "allowed_locations" {
+  type        = list(string)
+  description = "Azure regions allowed in Production"
+}

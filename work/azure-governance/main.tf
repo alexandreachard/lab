@@ -41,3 +41,12 @@ resource "azurerm_management_group_subscription_association" "prod_sub" {
   management_group_id = azurerm_management_group.prod.id
   subscription_id     = "/subscriptions/${var.prod_subscription_id}"
 }
+
+resource "azurerm_management_group_policy_assignment" "allowed_locations_prod" {
+  name                 = "allowed_locations_prod"
+  management_group_id  = azurerm_management_group.prod.id
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c"
+  parameters = jsonencode({
+    listOfAllowedLocations = { value = var.allowed_locations }
+  })
+}
