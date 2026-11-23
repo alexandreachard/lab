@@ -1,16 +1,6 @@
-variable "host_project" {
-  description = "Project ID of the VPC Host project"
-  type        = string
-}
-
 variable "project_id" {
   type        = string
   description = "Project ID"
-}
-
-variable "region" {
-  type        = string
-  description = "Region where the instance template should be created."
 }
 
 variable "zone" {
@@ -19,10 +9,9 @@ variable "zone" {
 }
 
 variable "source_image" {
-  description = "Source disk image. If neither source_image nor source_image_family is specified, defaults to the latest public CentOS image."
+  description = "Boot disk image, e.g. debian-cloud/debian-12"
   type        = string
 }
-
 
 variable "disk_type" {
   description = "Boot disk type, can be either pd-ssd, local-ssd, or pd-standard"

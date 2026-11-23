@@ -4,12 +4,6 @@ resource "google_service_account" "mytestvm-sa" {
   project      = var.project_id
 }
 
-data "google_compute_disk" "mytestvm-disk" {
-  name    = "mytestvm-disk"
-  zone    = var.zone
-  project = var.project_id
-}
-
 resource "google_compute_instance" "mytestvm" {
   name         = "mytestvm"
   hostname     = "mytestvm.dev.local"
@@ -29,7 +23,7 @@ resource "google_compute_instance" "mytestvm" {
   boot_disk {
     kms_key_self_link = var.disk_encryption_key
     initialize_params {
-      image = "debian-cloud/debian-11"
+      image = var.source_image
       size  = 20
       type  = var.disk_type
     }
@@ -40,6 +34,5 @@ resource "google_compute_instance" "mytestvm" {
   }
   metadata = {
     "enable-oslogin" = "true"
-    "ssh-keys"       = "mynewuser:ssh-rsa AAAAxxxxxxxxxxxx mynewuser"
   }
 }
