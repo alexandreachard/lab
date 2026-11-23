@@ -50,3 +50,22 @@ resource "azurerm_management_group_policy_assignment" "allowed_locations_prod" {
     listOfAllowedLocations = { value = var.allowed_locations }
   })
 }
+
+# Team access: one Entra group per team, roles inherited by every subscription in the management group
+resource "azurerm_role_assignment" "team_a_nonprod" {
+  scope                = azurerm_management_group.non_prod.id
+  role_definition_name = "Contributor"
+  principal_id         = var.team_a_group_object_id
+}
+
+resource "azurerm_role_assignment" "team_a_prod" {
+  scope                = azurerm_management_group.prod.id
+  role_definition_name = "Reader"
+  principal_id         = var.team_a_group_object_id
+}
+
+resource "azurerm_role_assignment" "ops_prod" {
+  scope                = azurerm_management_group.prod.id
+  role_definition_name = "Contributor"
+  principal_id         = var.ops_group_object_id
+}
