@@ -5,10 +5,15 @@ resource "google_service_account" "prod-rp-sa" {
   project      = var.project_id
 }
 
+# CMEK disks: the role goes to the Compute Engine service agent, not to the VM service account
+data "google_project" "this" {
+  project_id = var.project_id
+}
+
 resource "google_kms_crypto_key_iam_member" "crypto_key" {
   crypto_key_id = var.disk_encryption_key
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = "serviceAccount:${google_service_account.prod-rp-sa.email}"
+  member        = "serviceAccount:service-${data.google_project.this.number}@compute-system.iam.gserviceaccount.com"
 }
 
 module "instance_template" {
@@ -33,7 +38,6 @@ module "instance_template" {
   subnetwork         = var.subnetwork
   subnetwork_project = var.subnetwork_project
   can_ip_forward     = var.can_ip_forward
-  network_ip         = "10.231.57.10"
 
   /* image */
   source_image         = var.source_image
@@ -153,7 +157,7 @@ module "gce-lb-http" {
 # Cloud Armor policy
 
 resource "google_compute_security_policy" "allow_source_ips" {
-  name = "gke-backend-allow-source-ips"
+  name = "rp-allow-source-ips"
 
   project = var.project_id
 
@@ -166,7 +170,7 @@ resource "google_compute_security_policy" "allow_source_ips" {
         src_ip_ranges = var.allow_source_ips
       }
     }
-    description = "Allow access for testing"
+    description = "Allowed source IPs"
   }
 
   rule {
@@ -175,9 +179,9 @@ resource "google_compute_security_policy" "allow_source_ips" {
     match {
       versioned_expr = "SRC_IPS_V1"
       config {
-        src_ip_ranges = ["*"] #allow specific public ip at first
+        src_ip_ranges = ["*"] # deny everything else
       }
     }
-    description = "Default rule"
+    description = "Default rule: deny"
   }
 }

@@ -18,9 +18,8 @@ variable "additional_disks" {
 }
 
 variable "allow_source_ips" {
-  description = "List of CIDR ranges allowed to access the service behind the LB"
+  description = "CIDR ranges allowed to reach the service behind the LB (max 10 per rule in basic mode)"
   type        = list(string)
-  default     = ["0.0.0.0/0"]
 }
 
 variable "autoscaling_cpu" {
