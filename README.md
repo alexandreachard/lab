@@ -2,7 +2,7 @@
 
 [![terraform-validate](https://github.com/alexandreachard/lab/actions/workflows/terraform-validate.yml/badge.svg)](https://github.com/alexandreachard/lab/actions/workflows/terraform-validate.yml)
 
-Terraform patterns, experiments, runbooks and small tools from my work and my homelab.
+Terraform and runbooks from my work (sanitized), my homelab, and what I'm learning.
 
 - **[work](work)**: patterns and setups I built on the job, sanitized (no names, IDs or real addresses).
 - **[homelab](homelab)**: runbooks from my K3s cluster, [k3s-gitops-homelab](https://github.com/alexandreachard/k3s-gitops-homelab).
