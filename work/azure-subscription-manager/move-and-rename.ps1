@@ -83,7 +83,6 @@ foreach ($sub in $subs) {
     }
 
     $counter++
-    Start-Sleep -Seconds 2
 }
 
 Write-Host "`n=== DONE — Success: $success | Errors: $errors ===" -ForegroundColor Cyan
