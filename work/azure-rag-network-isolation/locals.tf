@@ -15,7 +15,6 @@ locals {
     cosmosdb_account      = "${local.prefix}-cosmos-db"
     cosmosdb_sql_database = "${local.prefix}-cosmos-sqldb"
     search                = "${local.prefix}-srch-core"
-    search-backup         = "${local.prefix}-srch-backup"
     asp                   = "${local.prefix}-webapp-asp"
     storage               = "rag${local.environment_code}stocore"
     container             = "${local.prefix}-sto-data-bucket"
@@ -52,7 +51,7 @@ locals {
     formrecog = { zone_name = "privatelink.cognitiveservices.azure.com", subresource_names = ["account"], private_endpoint_name = "pe-formrecog" }
     search    = { zone_name = "privatelink.search.windows.net", subresource_names = ["searchService"], private_endpoint_name = "pe-search" }
     cosmosdb  = { zone_name = "privatelink.documents.azure.com", subresource_names = ["sql"], private_endpoint_name = "pe-cosmosdb" }
-    openai    = { zone_name = "privatelink.cognitiveservices.azure.com", subresource_names = ["account"], private_endpoint_name = "pe-openai" }
+    openai    = { zone_name = "privatelink.openai.azure.com", subresource_names = ["account"], private_endpoint_name = "pe-openai" }
   }
 
   enabled_pe_services = { for k, v in local.private_services : k => v if contains(keys(local.service_ids), k) }

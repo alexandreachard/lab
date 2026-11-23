@@ -1,115 +1,28 @@
-# Module: Private AI RAG Architecture
+# Azure RAG network isolation
 
-In this experiment, I provision a fully network-isolated Retrieval-Augmented Generation (RAG) backend infrastructure. It implements strict perimeter security, ensuring that my compute services (App Service, Function App) communicate with data layers (CosmosDB, Blob Storage, Azure AI Search) exclusively over private endpoints, completely disabling public internet ingress.
+Infrastructure of a RAG application on Azure where everything talks over Private Endpoints: App Service (front and API), a Function App for indexing, Cosmos DB, Blob Storage, AI Search, Azure OpenAI, Document Intelligence and ACR.
 
-## Functional Domain Layering
+- `network.tf`: VNet and subnets ([network module](../terraform-modules/network)), private DNS zones, Private Endpoints.
+- `compute.tf`: App Service, Function App, ACR, Application Insights.
+- `data.tf`: Cosmos DB, storage, AI Search, Cognitive Services accounts.
+- `locals.tf`: naming from the `Environment` tag (`rag-dev-...`, `rag-prd-...`) and the list of services that get a Private Endpoint.
 
-I refactored the codebase into domain-centric blocks rather than standalone resource components to mirror enterprise platform modularity:
+## Why
 
-* **`network.tf`**: Establishes my core VNet, delegated integrations subnets, Azure Private DNS Zones, and Private Endpoints.
-* **`compute.tf`**: Hosts my web frontend application runtime, API orchestration services, ingestion Azure Functions, Application Insights workspaces, and my private Azure Container Registry (ACR).
-* **`data.tf`**: Provisions my private persistent backends and data plane systems (CosmosDB, Blob Storage buckets, Azure AI Search clusters, and Document Intelligence engines).
+I deploy generative AI platforms (Azure OpenAI, AI Search, Container Apps, Private Endpoints) for several production and development environments. It started as a proof of concept; this version is the refactoring with modules, variables and one naming standard, so a new environment is a new tfvars file.
 
-## Centralized Naming & Configuration Engine (`locals.tf`)
+## What I learned
 
-I use a centralized deterministic naming standard to dynamically generate compliant resource identifiers based on environment type inputs:
+- Two services can share a private DNS zone (Document Intelligence and other Cognitive Services accounts), so the zones are created from the distinct zone names, not one per service.
+- Azure OpenAI answers on `*.openai.azure.com`: its Private Endpoint needs `privatelink.openai.azure.com`.
+- App Service and Function App pull from ACR with their managed identity (`container_registry_use_managed_identity` + AcrPull), no admin user.
+- What I'd change: the API and the Function App still get keys and connection strings in their app settings, so they are also in plain text in the Terraform state. Next step is managed identity with data plane roles (Cognitive Services OpenAI User, Search Index Data Reader/Contributor, the Cosmos DB built-in data roles, Storage Blob Data Contributor), or Key Vault references at least. It needs changes in the application code too.
 
-```hcl
-locals {
-  environment_name = lower(var.tags["Environment"])
-  environment_code = lower(var.tags["Environment"]) == "production" ? "prd" : "dev"
-  
-  prefix = "rag-${local.environment_code}"
+## Run it
 
-  resource_names = {
-    resource_group        = "${local.prefix}-rg-backend"
-    cosmosdb_account      = "${local.prefix}-cosmos-db"
-    search                = "${local.prefix}-srch-core"
-    storage               = "rag${local.environment_code}stocore"
-    functionapp           = "${local.prefix}-functionapp"
-    vnet_name             = "${local.prefix}-vnet"
-  }
-}
-```
-
-## Usage
-I use a terraform.tfvars file configured like this one to feed my parameters:
-
-```hcl
-location = "swedencentral"
-
-tenant_id = "00000000-0000-0000-0000-000000000000"
-client_id = "00000000-0000-0000-0000-000000000000"
-tags = {
-  Environment = "development"
-  Project     = "rag-privacy-validation"
-}
-address_space              = ["10.231.0.0/16"]
-function_subnet_prefixes   = ["10.231.2.0/24"] 
-appservice_subnet_prefixes = ["10.231.3.0/24"] 
-private_subnet_prefixes    = ["10.231.4.0/24"] 
-
-ip_range_filter-cosmosdb = [
-# add allowed ips here
-]
-
-ip_range_filter_blob = [
-# add allowed ips here
-]
-
-# CosmosDB SQL Containers
-cosmosdb_sql_containers = {
-  conversations = {
-    name               = "conversations"
-    partition_key_path = "/userId"
-  }
-  messages = {
-    name               = "messages"
-    partition_key_path = "/conversationId"
-  }
-  users = {
-    name               = "users"
-    partition_key_path = "/userId"
-  }
-}
-
-# App Service
-apps = {
-  "front" = {
-    suffix            = "ui"
-    docker_image_name = "nginx:latest"
-    app_settings      = {}
-  }
-  "api" = {
-    suffix            = "web-api"
-    docker_image_name = "python-rag-api:latest"
-    app_settings      = {
-      LOG_LEVEL = "DEBUG"
-    }
-  }
-}
-
-cognitive_accounts = {
-  Document_Intelligence = {
-    kind       = "FormRecognizer"
-    sku_name   = "S0"
-    ip_rules   = []
-    acl_action = "Deny"
-    cdn_suffix = "docintel"
-  }
-  Open_AI = {
-    kind       = "OpenAI"
-    sku_name   = "S0"
-    ip_rules   = []
-    acl_action = "Deny"
-    cdn_suffix = "openai"
-  }
-}
-```
-
-And I run this execution sequence to deploy the infrastructure stack:
-```bash
+```sh
+cp terraform.tfvars.example terraform.tfvars
 terraform init
-terraform plan -var-file="terraform.tfvars" -out=rag.tfplan
+terraform plan -var-file=terraform.tfvars -out=rag.tfplan
 terraform apply rag.tfplan
 ```

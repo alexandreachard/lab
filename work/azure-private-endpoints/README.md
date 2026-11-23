@@ -1,13 +1,31 @@
-# Pattern: Private Endpoint Factory
+# Azure Private Endpoints
 
-This pattern shows how I loop over multiple Azure services to spin up private endpoints simultaneously. It keeps my codebase clean by eliminating the need to write repetitive, standalone resource blocks for every single database, cognitive service, or storage account.
+One Private Endpoint per service from a single map (storage, Cosmos DB, Search, OpenAI...), with the VNet links to the private DNS zones. Uses the [private_endpoint module](../terraform-modules/private_endpoint).
 
-## How It Works
+## Why
 
-Instead of copy-pasting resource blocks, I pass a map of target resources into a single configuration engine. The underlying automation loop handles the heavy lifting:
+Every PaaS service of a project needs the same thing: a Private Endpoint, its DNS zone group and a VNet link. Writing it once per service was copy-paste, so the services are a map and Terraform loops over it.
 
-First, it links the required private DNS zones directly to my main hub or spoke VNet. 
+## What I learned
 
-Next, it loops through my custom private endpoint module to deploy the virtual network interfaces. 
+- A VNet can only be linked once to a private DNS zone. Two services in the same zone (two storage accounts in `privatelink.blob.core.windows.net`) need one link, not two: the links loop over the distinct zones.
+- The DNS zone group on the Private Endpoint creates the A record in the private zone, no manual record.
+- The zone depends on the endpoint the client uses: an OpenAI account answers on `*.openai.azure.com`, so it needs `privatelink.openai.azure.com`, not only `privatelink.cognitiveservices.azure.com`.
 
-Finally, it registers the internal DNS A-records to ensure seamless, private name resolution across the entire network.
+## Run it
+
+```hcl
+services_to_isolate = {
+  blob = {
+    resource_id       = "<storage account id>"
+    subresource_names = ["blob"]
+    dns_zone_id       = "<privatelink.blob.core.windows.net zone id>"
+    dns_zone_name     = "privatelink.blob.core.windows.net"
+  }
+}
+```
+
+```sh
+terraform init
+terraform plan -var-file=terraform.tfvars
+```

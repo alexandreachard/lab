@@ -1,0 +1,70 @@
+# cp terraform.tfvars.example terraform.tfvars (ignored by git)
+location = "swedencentral"
+
+tenant_id = "00000000-0000-0000-0000-000000000000"
+client_id = "00000000-0000-0000-0000-000000000000"
+tags = {
+  Environment = "development"
+  Project     = "rag-privacy-validation"
+}
+address_space              = ["10.231.0.0/16"]
+function_subnet_prefixes   = ["10.231.2.0/24"] 
+appservice_subnet_prefixes = ["10.231.3.0/24"] 
+private_subnet_prefixes    = ["10.231.4.0/24"] 
+
+ip_range_filter-cosmosdb = [
+# add allowed ips here
+]
+
+ip_range_filter_blob = [
+# add allowed ips here
+]
+
+# CosmosDB SQL Containers
+cosmosdb_sql_containers = {
+  conversations = {
+    name               = "conversations"
+    partition_key_path = "/userId"
+  }
+  messages = {
+    name               = "messages"
+    partition_key_path = "/conversationId"
+  }
+  users = {
+    name               = "users"
+    partition_key_path = "/userId"
+  }
+}
+
+# App Service
+apps = {
+  "front" = {
+    suffix            = "ui"
+    docker_image_name = "nginx:latest"
+    app_settings      = {}
+  }
+  "api" = {
+    suffix            = "web-api"
+    docker_image_name = "python-rag-api:latest"
+    app_settings      = {
+      LOG_LEVEL = "DEBUG"
+    }
+  }
+}
+
+cognitive_accounts = {
+  Document_Intelligence = {
+    kind       = "FormRecognizer"
+    sku_name   = "S0"
+    ip_rules   = []
+    acl_action = "Deny"
+    cdn_suffix = "docintel"
+  }
+  Open_AI = {
+    kind       = "OpenAI"
+    sku_name   = "S0"
+    ip_rules   = []
+    acl_action = "Deny"
+    cdn_suffix = "openai"
+  }
+}

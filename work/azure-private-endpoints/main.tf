@@ -1,13 +1,13 @@
-# We link the DNS zone to the VNet first
+# One link per DNS zone, not per service: a VNet can only be linked once to a zone
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
-  for_each              = var.services_to_isolate
-  name                  = "link-${each.key}"
+  for_each              = toset([for s in var.services_to_isolate : s.dns_zone_name])
+  name                  = "link-${replace(each.key, ".", "-")}"
   resource_group_name   = var.resource_group_name
-  private_dns_zone_name = each.value.dns_zone_name
+  private_dns_zone_name = each.key
   virtual_network_id    = var.vnet_id
 }
 
-# Then we call the existing module to create the endpoints
+# One Private Endpoint per service
 module "private_endpoints" {
   source                         = "../terraform-modules/private_endpoint"
   for_each                       = var.services_to_isolate
