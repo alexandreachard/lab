@@ -25,7 +25,7 @@ Similarly, removing a resource block from HCL automatically schedules a cloud de
 │ Pattern                               │ Under the Hood Behavior                                │
 ├───────────────────────────────────────┼────────────────────────────────────────────────────────┤
 │ moved {                               │ Updates state address mapping in-place.                │
-│   from = azurerm_linux_web_app.api    │ Zero API calls to Azure.                               │
+│   from = azurerm_linux_web_app.api    │ No resource change (refresh still reads it).           │
 │   to   = azurerm_linux_web_app.rag_api│ Plan: 0 to add, 0 to change, 0 to destroy.             │
 │ }                                     │                                                        │
 ├───────────────────────────────────────┼────────────────────────────────────────────────────────┤
@@ -55,7 +55,7 @@ A critical distinction frequently tested in the **HashiCorp Terraform Associate 
 
 | Operation | Command / Block | State Action | Cloud Infrastructure Action |
 | :--- | :--- | :--- | :--- |
-| **Recreate Resource** | `terraform apply -replace="addr"` *(formerly `taint`)* | **Retained in state** (marked degraded) | Destroys and recreates resource on next apply. |
+| **Recreate Resource** | `terraform apply -replace="addr"` *(formerly `taint`)* | **State unchanged**: the replacement only exists in the plan (`taint` used to mark the state) | Destroys and recreates the resource during that apply. |
 | **Unmanage Resource** | `removed { lifecycle { destroy = false } }` *(formerly `state rm`)* | **Removed from state** | **Untouched in cloud** (Resource survives). |
 | **Purge Resource** | `removed { lifecycle { destroy = true } }` | **Removed from state** | **Destroyed in cloud**. |
 

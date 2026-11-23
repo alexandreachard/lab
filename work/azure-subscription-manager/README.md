@@ -13,7 +13,7 @@ A common architectural question is whether subscription renaming and Management 
 | **Azure Policy** | ❌ **Unsupported by design.** Azure Policy governs ARM resources *inside* subscriptions (tags, SKUs, encryption). It has no `modify` or `append` effect capable of mutating the subscription's root `displayName`. Furthermore, Policy cannot evaluate subscription naming patterns at the Tenant Root Group to dynamically relocate subscriptions into child Management Groups. | Direct API call via Azure CLI bypasses Policy engine scope limitations. |
 | **Terraform (IaC)** | ⚠️ **Heavyweight for brownfield intake.** While `azurerm_management_group_subscription_association` handles declarative placement, managing 50 unorganized subscriptions requires 50 pre-existing `import {}` blocks and extensive state reconciliation for a one-time reorganization. | Ideal pre-IaC sanitization tool: normalizes names and hierarchy *before* onboarding to Terraform Landing Zones. |
 | **Event Grid + Logic App** | ⚠️ **High operational overhead.** Requires provisioning and maintaining event-driven infrastructure just for batch subscription intake. | Zero infrastructure footprint: runs directly from any engineer terminal or CI runner in seconds. |
-| **IAM Privilege Boundary** | 💡 Platform engineers rarely have `Owner` or `Contributor` rights on the **Tenant Root Group** in enterprise environments. | **Least privilege trick:** With only `Reader` on source subscriptions and `Contributor` on the destination Management Group, the script pulls subscriptions into the target MG without requiring root-level elevation. |
+| **IAM Privilege Boundary** | 💡 Platform engineers rarely have `Owner` or `Contributor` rights on the **Tenant Root Group** in enterprise environments. | No elevation on the Tenant Root Group: when the subscriptions are still under the root group, no permission is needed there. You still need `Owner` on each subscription and write access on the destination Management Group ([required permissions](https://learn.microsoft.com/en-us/azure/governance/management-groups/manage#move-management-groups-and-subscriptions)). |
 
 ---
 
@@ -33,9 +33,9 @@ When provisioning subscriptions in an Azure Landing Zone, subscriptions initiall
 | :--- | :--- |
 | **Azure CLI** | `az` installed and authenticated (`az login`) |
 | **PowerShell** | PowerShell 7+ (`pwsh`) or Windows PowerShell 5.1 |
-| **Subscription IAM** | `Reader` role on source subscriptions |
+| **Subscription IAM** | `Owner` (or a custom role with `Microsoft.Management/managementGroups/subscriptions/write` and role assignment write) on each subscription |
 | **Management Group IAM** | `Management Group Contributor` (or `Owner`) on the target Management Group |
-| **Tenant Root Group** | **No permissions required** on root; `az account list --all` retrieves subscriptions directly. |
+| **Tenant Root Group** | No permission required when the subscriptions are moved out of the root group. If they sit under another management group, write access is needed on that one too. |
 
 ---
 
