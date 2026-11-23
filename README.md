@@ -26,7 +26,7 @@ Terraform and runbooks from my work (sanitized), my homelab, and what I'm learni
 | Item | What it is | Status |
 | :-- | :-- | :-- |
 | [renovate-cronjob](homelab/renovate-cronjob) | Self-hosted Renovate as a Kubernetes CronJob, with Flux and SOPS | Running |
-| [traefik-ingress-tls](homelab/traefik-ingress-tls) | Exposing services on K3s with Traefik and TLS | Outdated: moving to cert-manager |
+| [traefik-ingress-tls](homelab/traefik-ingress-tls) | TLS on Traefik Ingresses with cert-manager and Let's Encrypt (DNS-01 on Cloudflare) | Running |
 | [cloudflare-tunnel](homelab/cloudflare-tunnel) | Public access through Cloudflare Tunnel, no open port | Running |
 
 ## Learning
