@@ -6,6 +6,7 @@ terraform.tfstate.backup
 
 .env
 .env.*
+!.env.example
 
 .vscode/
 

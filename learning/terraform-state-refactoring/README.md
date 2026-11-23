@@ -1,101 +1,22 @@
-# Pattern: Modern Terraform State Refactoring (Terraform 1.7+)
+# Terraform state refactoring
 
-Zero-downtime refactoring and declarative state management patterns applied to Azure infrastructure, using native HCL blocks introduced in Terraform 1.1+ and 1.7+.
+Renaming a resource and dropping another one from Terraform without destroying anything in Azure, with `moved {}` (Terraform 1.1) and `removed {}` (Terraform 1.7) instead of `terraform state mv` / `state rm`. Prep for the Terraform Associate (004).
 
----
+## Why
 
-## The Problem: The Naive Refactoring Pitfall
+Renaming `azurerm_linux_web_app.api` to `rag_api` in the code makes Terraform plan a destroy and a create: a new App Service, an outage. And deleting a block plans a destroy even when I only want another pipeline to manage the resource.
 
-In traditional Terraform workflows, renaming a resource or moving it to a module causes a destructive plan:
+## What I learned
 
-```
-Naive HCL Renaming:
-  [azurerm_linux_web_app.api] deleted     ──► Azure API: Destroy App Service (Outage, lost IPs/TLS)
-  [azurerm_linux_web_app.rag_api] created ──► Azure API: Create fresh App Service
-```
+- `moved { from, to }` updates the address in the state: the plan shows "has moved to", 0 to add, 0 to destroy. The refresh still reads the resource.
+- Keep `moved` blocks in shared modules: removing one is a breaking change, a user still on the old address gets a delete instead of a move.
+- `removed { lifecycle { destroy = false } }` takes the resource out of the state and leaves it in Azure. It replaces the resource block in the code.
+- `-replace` (Terraform 0.15.2+) recreates a resource in one apply and marks nothing in the state. `terraform taint` is deprecated.
 
-Similarly, removing a resource block from HCL automatically schedules a cloud destruction (`destroy`), even when the intention was only to delegate management to another team or pipeline.
+## Run it
 
----
-
-## The Solution: Declarative State Primitives
-
-```
-┌───────────────────────────────────────┬────────────────────────────────────────────────────────┐
-│ Pattern                               │ Under the Hood Behavior                                │
-├───────────────────────────────────────┼────────────────────────────────────────────────────────┤
-│ moved {                               │ Updates state address mapping in-place.                │
-│   from = azurerm_linux_web_app.api    │ No resource change (refresh still reads it).           │
-│   to   = azurerm_linux_web_app.rag_api│ Plan: 0 to add, 0 to change, 0 to destroy.             │
-│ }                                     │                                                        │
-├───────────────────────────────────────┼────────────────────────────────────────────────────────┤
-│ removed {                             │ Ejects address from .tfstate file.                     │
-│   from = azurerm_storage_account.data │ destroy = false: Leaves Azure cloud resource intact.  │
-│   lifecycle { destroy = false }       │ destroy = true:  Deletes Azure resource + purges state.│
-│ }                                     │ (Declarative replacement for `terraform state rm`).    │
-└───────────────────────────────────────┴────────────────────────────────────────────────────────┘
-```
-
----
-
-## Directory Structure
-
-```
-learning/terraform-state-refactoring/
-├── main.tf
-├── variables.tf
-└── README.md
-```
-
----
-
-## Exam & Production Traps: `replace` vs `removed`
-
-A critical distinction frequently tested in the **HashiCorp Terraform Associate 004** exam:
-
-| Operation | Command / Block | State Action | Cloud Infrastructure Action |
-| :--- | :--- | :--- | :--- |
-| **Recreate Resource** | `terraform apply -replace="addr"` *(formerly `taint`)* | **State unchanged**: the replacement only exists in the plan (`taint` used to mark the state) | Destroys and recreates the resource during that apply. |
-| **Unmanage Resource** | `removed { lifecycle { destroy = false } }` *(formerly `state rm`)* | **Removed from state** | **Untouched in cloud** (Resource survives). |
-| **Purge Resource** | `removed { lifecycle { destroy = true } }` | **Removed from state** | **Destroyed in cloud**. |
-
----
-
-## Validation & Workflow
-
-### 1. Initialize and Validate
-
-```bash
-cd learning/terraform-state-refactoring
-
+```sh
 terraform init -backend=false
 terraform validate
+terraform plan    # against a state that still has azurerm_linux_web_app.api
 ```
-
-### 2. Preview the Refactoring Plan
-
-When running `terraform plan` on a state where `azurerm_linux_web_app.api` already exists:
-
-```bash
-terraform plan
-```
-
-Output highlights:
-```text
-Terraform will perform the following actions:
-
-  # azurerm_linux_web_app.api has moved to azurerm_linux_web_app.rag_api
-    resource "azurerm_linux_web_app" "rag_api" {
-        id = "/subscriptions/.../providers/Microsoft.Web/sites/app-rag-api-staging"
-        # ... attributes unchanged
-    }
-
-  # azurerm_storage_account.rag_data will no longer be managed by Terraform
-    # (destroy = false in removed block)
-
-Plan: 0 to add, 0 to change, 0 to destroy.
-```
-
-### 3. Commit to Git
-
-Once applied across all environments (`dev`, `staging`, `prod`), `moved` and `removed` blocks can be safely committed to the repository, providing full auditability through Pull Requests.

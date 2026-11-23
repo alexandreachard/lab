@@ -35,7 +35,4 @@ Review and update:
 - REDIS_PASSWORD
 - DATA_PATH
 
-> Note
->
-> Resource limits defined under `deploy.resources` are primarily intended for Docker Swarm.
-> Depending on the Docker Compose version and runtime, they may not be enforced outside of Swarm deployments.
+Resource limits are under `deploy.resources`. To check they apply with `docker compose up` (not Swarm): `docker inspect --format '{{.HostConfig.Memory}} {{.HostConfig.NanoCpus}}' <container>`.

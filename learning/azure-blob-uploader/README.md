@@ -1,24 +1,24 @@
-# Recipe: Automated PDF Ingestion via Docker & SAS Token
+# Azure Blob uploader
 
-This recipe containerizes the process of batch-uploading files to an isolated Azure Storage Account container using a short-lived Shared Access Signature (SAS) token.
+A small container with the Azure CLI that uploads the files of a local folder to a Blob Storage container, with a SAS token.
 
-## Why this pattern?
-I packed the Azure CLI into a minimal Alpine container, so i can run data ingestion pipelines from any environment (GitHub Actions, local machines, or on-prem servers) without manually installing cloud dependencies on the host system.
+## Why
 
-## Execution
+I needed to push test PDFs into a storage account from different machines without installing the Azure CLI everywhere.
 
-1. I drop my target files into a local `./pdfs` folder.
-2. I build the lightweight automation container:
-```bash
+## Run it
+
+Put the PDFs in `./pdfs` (they are copied into the image at build time), then:
+
+```sh
 docker build -t blob-uploader .
-```
-
-And then I run the container by passing my destination url and my secure SAS token as environment variables:
-```bash
 docker run --rm \
-  -e BLOB_CONTAINER_URL="[https://ragdevstocore.blob.core.windows.net/data-bucket](https://ragdevstocore.blob.core.windows.net/data-bucket)" \
-  -e SAS_TOKEN="sp=r&st=2026-06-26T...your-sas-token-string..." \
+  -e BLOB_CONTAINER_URL="https://<account>.blob.core.windows.net/<container>" \
+  -e SAS_TOKEN="<sas token>" \
   blob-uploader
 ```
-## Production Note
-This setup is meant for my own local verification and quick testing. In a production environment, I would swap out the SAS token mechanism for Azure Managed Identities to avoid passing around temporary credential strings.
+
+## What I'd change
+
+- Mount the folder (`-v ./pdfs:/app/pdfs`) instead of copying it into the image: no rebuild for each batch.
+- A SAS token is a secret passed around in a command line. For anything else than a quick test, I'd use a managed identity (or `azcopy login`) and the Storage Blob Data Contributor role.
