@@ -50,16 +50,12 @@ Expose internal Kubernetes services securely to the internet without opening inb
 
 ---
 
-## Directory Structure
+## Files in my cluster
 
-```
-homelab/cloudflare-tunnel/
-├── manifests/
-│   ├── configmap.yaml
-│   ├── deployment.yaml
-│   └── secret-template.yaml
-└── README.md
-```
+One tunnel per app, in the app overlay of [k3s-gitops-homelab](https://github.com/alexandreachard/k3s-gitops-homelab/tree/main/apps/staging). Example with audiobookshelf:
+
+- [cloudflare.yaml](https://github.com/alexandreachard/k3s-gitops-homelab/blob/main/apps/staging/audiobookshelf/cloudflare.yaml) (Deployment + ConfigMap)
+- [cloudflare-secret.yaml](https://github.com/alexandreachard/k3s-gitops-homelab/blob/main/apps/staging/audiobookshelf/cloudflare-secret.yaml) (tunnel credentials, encrypted with SOPS)
 
 ---
 
@@ -80,7 +76,7 @@ cloudflared tunnel route dns <TUNNEL_NAME> app.example.com
 
 ### 2. Configure the Kubernetes Secret
 
-Extract the content from `<TUNNEL_UUID>.json` into `manifests/secret-template.yaml`:
+Extract the content from `<TUNNEL_UUID>.json` into a Secret manifest:
 
 ```yaml
 apiVersion: v1
@@ -103,14 +99,14 @@ Encrypt with Mozilla SOPS before committing to Git:
 ```bash
 sops --encrypt --in-place \
   --encrypted-regex '^(data|stringData)$' \
-  manifests/secret-template.yaml
+  cloudflare-secret.yaml
 ```
 
 > **Security Cleanup:** Remove `~/.cloudflared/cert.pem` from the machine once the tunnel is created.
 
 ### 3. Configure Routing in ConfigMap
 
-Edit `manifests/configmap.yaml` to point your external domain to your internal `ClusterIP` service:
+Edit the ConfigMap in `cloudflare.yaml` to point your external domain to your internal `ClusterIP` service:
 
 ```yaml
 data:
@@ -128,10 +124,11 @@ data:
 
 ### 4. Deploy to Cluster
 
+Commit the files: Flux applies them and decrypts the Secret with the Age key.
+
 ```bash
-kubectl apply -f manifests/secret-template.yaml
-kubectl apply -f manifests/configmap.yaml
-kubectl apply -f manifests/deployment.yaml
+flux get kustomizations
+kubectl -n audiobookshelf get pods -l app=cloudflared
 ```
 
 ---

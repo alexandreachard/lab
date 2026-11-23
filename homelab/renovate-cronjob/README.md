@@ -18,7 +18,7 @@ Deploy a self-hosted **Renovate Bot** instance inside Kubernetes using a native 
                                  ▼
                      ┌───────────────────────┐
                      │     Renovate Pod      │
-                     │  Image: renovate:latest│
+                     │  Image: renovate pinned│
                      └─────┬───────────┬─────┘
                            │           │
            Reads ConfigMap │           │ Authenticates via Secret (SOPS)
@@ -34,17 +34,15 @@ Deploy a self-hosted **Renovate Bot** instance inside Kubernetes using a native 
 
 ---
 
-## Directory Structure
+## Files in my cluster
 
-```
-homelab/renovate-cronjob/
-├── manifests/
-│   ├── namespace.yaml
-│   ├── configmap.yaml
-│   ├── secret-template.yaml
-│   └── cronjob.yaml
-└── README.md
-```
+The manifests live in [k3s-gitops-homelab](https://github.com/alexandreachard/k3s-gitops-homelab/tree/main/infrastructure/controllers/base/renovate) and Flux applies them:
+
+- [namespace.yaml](https://github.com/alexandreachard/k3s-gitops-homelab/blob/main/infrastructure/controllers/base/renovate/namespace.yaml)
+- [configmap.yaml](https://github.com/alexandreachard/k3s-gitops-homelab/blob/main/infrastructure/controllers/base/renovate/configmap.yaml)
+- [renovate-container-env.yaml](https://github.com/alexandreachard/k3s-gitops-homelab/blob/main/infrastructure/controllers/base/renovate/renovate-container-env.yaml) (encrypted with SOPS)
+- [cronjob.yaml](https://github.com/alexandreachard/k3s-gitops-homelab/blob/main/infrastructure/controllers/base/renovate/cronjob.yaml)
+- [renovate.json](https://github.com/alexandreachard/k3s-gitops-homelab/blob/main/renovate.json)
 
 ---
 
@@ -61,7 +59,7 @@ homelab/renovate-cronjob/
 
 ### 1. Configure the Target Repository in ConfigMap
 
-Edit `manifests/configmap.yaml` to adjust the bot identity if necessary:
+Edit [`configmap.yaml`](https://github.com/alexandreachard/k3s-gitops-homelab/blob/main/infrastructure/controllers/base/renovate/configmap.yaml) to adjust the bot identity if necessary:
 
 ```yaml
 apiVersion: v1
@@ -86,16 +84,16 @@ kubectl create secret generic renovate-container-env \
   --from-literal=RENOVATE_TOKEN="ghp_your_pat_token_here"
 
 # OR with SOPS for GitOps workflows:
-# 1. Fill manifests/secret-template.yaml with your plaintext token
+# 1. Write the Secret manifest with your plaintext token
 # 2. Encrypt with Age:
 sops --encrypt --in-place \
   --encrypted-regex '^(data|stringData)$' \
-  manifests/secret-template.yaml
+  renovate-container-env.yaml
 ```
 
 ### 3. Update the Target Repository in CronJob
 
-In `manifests/cronjob.yaml`, replace `<GITUSER/REPO>` with your actual repository path (e.g. `alexandreachard/k3s-gitops-homelab`):
+In [`cronjob.yaml`](https://github.com/alexandreachard/k3s-gitops-homelab/blob/main/infrastructure/controllers/base/renovate/cronjob.yaml), replace `<GITUSER/REPO>` with your actual repository path (e.g. `alexandreachard/k3s-gitops-homelab`):
 
 ```yaml
 spec:
@@ -107,7 +105,7 @@ spec:
         spec:
           containers:
             - name: renovate
-              image: renovate/renovate:latest
+              image: renovate/renovate:<version>  # pinned, Renovate bumps it
               args:
                 - <GITUSER/REPO>
               envFrom:
