@@ -82,7 +82,7 @@ resource "azurerm_search_service" "main" {
   sku                 = var.search_sku
   semantic_search_sku = var.semantic_search_sku
   tags                = var.tags
-  partition_count = var.partition_count
+  partition_count     = var.partition_count
 }
 
 #
@@ -122,7 +122,7 @@ resource "azurerm_storage_account" "main" {
 }
 
 resource "azurerm_storage_container" "main" {
-  name = local.resource_names.container
+  name                  = local.resource_names.container
   storage_account_id    = azurerm_storage_account.main.id
   container_access_type = "private"
 }

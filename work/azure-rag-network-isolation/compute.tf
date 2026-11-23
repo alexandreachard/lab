@@ -12,22 +12,22 @@ resource "azurerm_service_plan" "main" {
 }
 
 resource "azurerm_linux_web_app" "main" {
-  for_each              = local.app_configs
-  name                  = each.value.name
-  resource_group_name   = azurerm_resource_group.main.name
-  location              = var.location
-  service_plan_id       = azurerm_service_plan.main.id
-  tags                  = var.tags
-  https_only            = var.https_only
-  public_network_access_enabled = var.public_network_access_enabled
-  virtual_network_subnet_id     = module.network.appservice_subnet_id
+  for_each                                       = local.app_configs
+  name                                           = each.value.name
+  resource_group_name                            = azurerm_resource_group.main.name
+  location                                       = var.location
+  service_plan_id                                = azurerm_service_plan.main.id
+  tags                                           = var.tags
+  https_only                                     = var.https_only
+  public_network_access_enabled                  = var.public_network_access_enabled
+  virtual_network_subnet_id                      = module.network.appservice_subnet_id
   ftp_publish_basic_authentication_enabled       = false
   webdeploy_publish_basic_authentication_enabled = false
 
 
   app_settings = merge(
     each.value.base_settings,
-    
+
     each.key == "api" ? {
       AZURE_COSMOSDB_ACCOUNT                = azurerm_cosmosdb_account.main.endpoint
       AZURE_COSMOSDB_KEY                    = azurerm_cosmosdb_account.main.primary_key
@@ -35,10 +35,8 @@ resource "azurerm_linux_web_app" "main" {
       AZURE_OPENAI_ENDPOINT                 = azurerm_cognitive_account.main["Open_AI"].endpoint
       AZURE_OPENAI_KEY                      = azurerm_cognitive_account.main["Open_AI"].primary_access_key
       AZURE_SEARCH_ADMIN_KEY                = azurerm_search_service.main.primary_key
-      AZURE_SEARCH_BACKUP_ADMIN_KEY         = azurerm_search_service.backup.primary_key
       AZURE_SEARCH_INDEX                    = local.resource_names.azure_search_index
       AZURE_SEARCH_SERVICE_ENDPOINT         = "https://${azurerm_search_service.main.name}.search.windows.net"
-      AZURE_SEARCH_BACKUP_SERVICE_ENDPOINT  = "https://${azurerm_search_service.backup.name}.search.windows.net"
       AZURE_STORAGE_CONNECTION_STRING       = azurerm_storage_account.main.primary_connection_string
       AZURE_STORAGE_CONTAINER_NAME          = azurerm_storage_container.main.name
       AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT  = azurerm_cognitive_account.main["Document_Intelligence"].endpoint
@@ -114,7 +112,7 @@ resource "azurerm_linux_function_app" "function" {
     application_stack {
       docker {
         registry_url = azurerm_container_registry.main.login_server
-        image_name   = "deployimage" 
+        image_name   = "deployimage"
         image_tag    = "latest"
       }
     }
@@ -137,8 +135,6 @@ resource "azurerm_linux_function_app" "function" {
     "AZURE_STORAGE_PREFIX_DELETED"               = "https://${azurerm_storage_account.main.name}.dfs.core.windows.net/${local.resource_names.container}/"
     "AZURE_SEARCH_SERVICE_ENDPOINT"              = "https://${azurerm_search_service.main.name}.search.windows.net"
     "AZURE_SEARCH_ADMIN_KEY"                     = azurerm_search_service.main.primary_key
-    "AZURE_SEARCH_BACKUP_SERVICE_ENDPOINT"       = "https://${azurerm_search_service.backup.name}.search.windows.net"
-    "AZURE_SEARCH_BACKUP_ADMIN_KEY"              = azurerm_search_service.backup.primary_key
     "AZURE_SEARCH_INDEX"                         = local.resource_names.azure_search_index
     "AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT"       = azurerm_cognitive_account.main["Document_Intelligence"].endpoint
     "AZURE_DOCUMENT_INTELLIGENCE_KEY"            = azurerm_cognitive_account.main["Document_Intelligence"].primary_access_key

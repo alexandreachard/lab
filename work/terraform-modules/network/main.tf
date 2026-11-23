@@ -40,7 +40,7 @@ resource "azurerm_subnet" "appservice_subnet" {
       ]
     }
   }
-  service_endpoints = ["Microsoft.Storage","Microsoft.AzureCosmosDB"]
+  service_endpoints = ["Microsoft.Storage", "Microsoft.AzureCosmosDB"]
 }
 
 
@@ -51,7 +51,7 @@ resource "azurerm_subnet" "private_endpoints_subnet" {
   address_prefixes     = var.private_subnet_prefixes
 
   private_endpoint_network_policies = "Disabled"
-  service_endpoints = ["Microsoft.Storage"]
+  service_endpoints                 = ["Microsoft.Storage"]
 }
 
 output "vnet_id" {

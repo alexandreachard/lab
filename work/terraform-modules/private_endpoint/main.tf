@@ -14,15 +14,15 @@ resource "azurerm_private_endpoint" "main" {
   }
 
   private_dns_zone_group {
-    name = "${var.private_endpoint_name}-dns-group"
+    name                 = "${var.private_endpoint_name}-dns-group"
     private_dns_zone_ids = [var.private_dns_zone_id]
   }
 }
 
 output "private_endpoint_id" {
-  value       = azurerm_private_endpoint.main.id
+  value = azurerm_private_endpoint.main.id
 }
 
 output "private_ip_address" {
-  value       = azurerm_private_endpoint.main.private_service_connection[0].private_ip_address
+  value = azurerm_private_endpoint.main.private_service_connection[0].private_ip_address
 }

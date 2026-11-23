@@ -9,12 +9,12 @@ variable "tags" {
 }
 
 variable "cosmosdb_offer_type" {
-  type = string
+  type    = string
   default = "Standard"
 }
 
 variable "cosmosdb_kind" {
-  type = string
+  type    = string
   default = "GlobalDocumentDB"
 }
 
@@ -34,7 +34,7 @@ variable "cosmosdb_tags" {
 variable "consistency_level" {
   type        = string
   description = "The Consistency Level to use for this CosmosDB Account - can be either BoundedStaleness, Eventual, Session, Strong or ConsistentPrefix."
-  default = "Session"
+  default     = "Session"
 
 }
 
@@ -52,26 +52,26 @@ variable "cosmosdb_sql_containers" {
 }
 
 variable "partition_count" {
-  type = number
+  type        = number
   description = "Number of partition"
-  default = 1
+  default     = 1
 }
 variable "search_sku" {
   type        = string
   description = "SKU of the search service"
-  default = "basic"
+  default     = "basic"
 }
 
 variable "semantic_search_sku" {
   type        = string
   description = "Specifies the Semantic Search SKU which should be used for this Search Service. Possible values include free and standard."
-  default = "standard"
+  default     = "standard"
 }
 
 variable "asp_os_type" {
   type        = string
   description = " The O/S type for the App Services to be hosted in this plan. Possible values include Windows, Linux, and WindowsContainer"
-  default = "Linux"
+  default     = "Linux"
 }
 
 variable "maximum_elastic_worker_count" {
@@ -84,7 +84,7 @@ variable "maximum_elastic_worker_count" {
 variable "asp_sku_name" {
   type        = string
   description = "The SKU for the plan."
-  default = "P2v2"
+  default     = "P2v2"
 }
 
 variable "asp_worker_count" {
@@ -96,7 +96,7 @@ variable "asp_worker_count" {
 variable "asp_zone_balancing" {
   type        = bool
   description = "Should the Service Plan balance across Availability Zones in the region."
-  default = true
+  default     = true
 }
 
 #App Service 
@@ -321,14 +321,14 @@ variable "cognitive_accounts" {
 }
 
 variable "acr_sku" {
-  type = string
+  type    = string
   default = "Premium"
 }
 
 variable "acr_admin_enabled" {
   type        = bool
   description = "Specifies whether the admin user is enabled."
-  default = false
+  default     = false
 }
 
 variable "data_endpoint_enabled" {

@@ -45,8 +45,8 @@ resource "google_compute_vpn_tunnel" "tunnel1" {
   project       = var.project_id
   region        = var.region
   name          = "vpn-prod"
-  peer_ip       = "w.x.y.z"
-  shared_secret = "MySuperSharedSecretPassw0rd"
+  peer_ip       = var.peer_ip
+  shared_secret = var.shared_secret
 
   target_vpn_gateway = google_compute_vpn_gateway.target_gateway.id
 

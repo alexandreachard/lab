@@ -15,7 +15,7 @@ module "instance_template" {
   source  = "terraform-google-modules/vm/google//modules/instance_template"
   version = "8.0.0"
 
-  region = var.region
+  region     = var.region
   project_id = var.project_id
 
   machine_type   = var.machine_type
@@ -83,13 +83,13 @@ module "mig" {
 # Create a Load Balancer, that uses the previous Managed Instance Group
 # as a backend
 module "gce-lb-http" {
-  source            = "GoogleCloudPlatform/lb-http/google"
-  version           = "~> 6.0"
-  name              = "group-http-lb-prod"
-  project           = var.project_id
-  target_tags       = ["allow-shared-vpc-mig"]
-  firewall_projects = [var.host_project]
-  firewall_networks = [var.network]
+  source               = "GoogleCloudPlatform/lb-http/google"
+  version              = "~> 6.0"
+  name                 = "group-http-lb-prod"
+  project              = var.project_id
+  target_tags          = ["allow-shared-vpc-mig"]
+  firewall_projects    = [var.host_project]
+  firewall_networks    = [var.network]
   ssl                  = var.ssl
   ssl_certificates     = var.ssl_certificates
   use_ssl_certificates = var.use_ssl_certificates

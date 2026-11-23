@@ -15,3 +15,13 @@ variable "network" {
   type        = string
   default     = "prod-spoke-0"
 }
+variable "peer_ip" {
+  type        = string
+  description = "Public IP of the on-premises VPN gateway"
+}
+
+variable "shared_secret" {
+  type        = string
+  description = "IPsec pre-shared key"
+  sensitive   = true
+}

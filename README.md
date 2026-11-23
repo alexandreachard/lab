@@ -1,5 +1,7 @@
 # lab
 
+[![terraform-validate](https://github.com/alexandreachard/lab/actions/workflows/terraform-validate.yml/badge.svg)](https://github.com/alexandreachard/lab/actions/workflows/terraform-validate.yml)
+
 Terraform patterns, experiments, runbooks and small tools from my work and my homelab.
 
 - **[work](work)**: patterns and setups I built on the job, sanitized (no names, IDs or real addresses).

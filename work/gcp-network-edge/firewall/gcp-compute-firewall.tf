@@ -9,8 +9,8 @@ resource "google_compute_firewall" "allow-mqtt-lb" {
     ports    = ["8883"]
   }
 
-  source_ranges = ["35.191.0.0/16","130.211.0.0/22"] #GCP Global external Application Load Balancer ips
-  target_tags = ["tcp-lb-mqtt"]
+  source_ranges = ["35.191.0.0/16", "130.211.0.0/22"] #GCP Global external Application Load Balancer ips
+  target_tags   = ["tcp-lb-mqtt"]
 }
 
 resource "google_compute_firewall" "allow-ssh-ingress-from-iap-to-vm" {
@@ -25,5 +25,5 @@ resource "google_compute_firewall" "allow-ssh-ingress-from-iap-to-vm" {
   }
 
   source_ranges           = ["35.235.240.0/20"]
-  target_service_accounts = ["${google_service_account.my-vm-sa.email}"]
+  target_service_accounts = [var.vm_service_account_email]
 }

@@ -1,0 +1,44 @@
+name: terraform-validate
+
+on:
+  push:
+    branches: [master]
+    paths: ["**.tf", "mise.toml", ".github/workflows/terraform-validate.yml"]
+  pull_request:
+    paths: ["**.tf", "mise.toml", ".github/workflows/terraform-validate.yml"]
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - run: terraform fmt -check -recursive
+
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir:
+          - learning/terraform-state-refactoring
+          - work/azure-governance
+          - work/azure-private-endpoints
+          - work/azure-rag-network-isolation
+          - work/gcp-mig-lb-cloud-armor
+          - work/gcp-network-edge/compute-instance
+          - work/gcp-network-edge/firewall
+          - work/gcp-network-edge/vpn
+          - work/netbox
+          - work/terraform-modules/aca
+          - work/terraform-modules/network
+          - work/terraform-modules/private_dns_zone
+          - work/terraform-modules/private_endpoint
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - name: terraform validate
+        working-directory: ${{ matrix.dir }}
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate

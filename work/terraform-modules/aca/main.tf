@@ -4,16 +4,16 @@ resource "azurerm_resource_group" "env" {
 }
 
 resource "azurerm_container_app_environment" "ace" {
-  name                       = "ace-${var.env_name}"
-  location                   = azurerm_resource_group.env.location
-  resource_group_name        = azurerm_resource_group.env.name
+  name                               = "ace-${var.env_name}"
+  location                           = azurerm_resource_group.env.location
+  resource_group_name                = azurerm_resource_group.env.name
   infrastructure_resource_group_name = azurerm_resource_group.env.name
   workload_profile {
     name                  = "Consumption"
     workload_profile_type = "Consumption"
   }
-  infrastructure_subnet_id   = var.subnet_id
-  internal_load_balancer_enabled = false 
+  infrastructure_subnet_id       = var.subnet_id
+  internal_load_balancer_enabled = false
   #true if using APIM
 }
 
@@ -23,18 +23,18 @@ resource "azurerm_container_app" "web_app" {
   resource_group_name          = azurerm_resource_group.env.name
   revision_mode                = "Single"
   ingress {
-      external_enabled = true
-      target_port      = 80
-      traffic_weight {
-        percentage      = 100
-        latest_revision = true
-      }
+    external_enabled = true
+    target_port      = 80
+    traffic_weight {
+      percentage      = 100
+      latest_revision = true
     }
+  }
   identity {
     type = "SystemAssigned"
   }
   registry {
-    server = var.acr_login_server
+    server   = var.acr_login_server
     identity = "system"
   }
 
@@ -53,7 +53,7 @@ resource "azurerm_container_app" "web_app" {
       }
     }
   }
-  
+
   lifecycle {
     ignore_changes = [template[0].container[0].image] # Allows Jenkins to control updates safely
   }

@@ -5,13 +5,13 @@ resource "google_service_account" "mytestvm-sa" {
 }
 
 data "google_compute_disk" "mytestvm-disk" {
-    name = "mytestvm-disk"
-    zone = var.zone
-    project = var.project_id
+  name    = "mytestvm-disk"
+  zone    = var.zone
+  project = var.project_id
 }
 
 resource "google_compute_instance" "mytestvm" {
-  name = "mytestvm"
+  name         = "mytestvm"
   hostname     = "mytestvm.dev.local"
   project      = var.project_id
   zone         = var.zone
@@ -30,9 +30,9 @@ resource "google_compute_instance" "mytestvm" {
     kms_key_self_link = var.disk_encryption_key
     initialize_params {
       image = "debian-cloud/debian-11"
-      size = 20
-      type = var.disk_type
-      }
+      size  = 20
+      type  = var.disk_type
+    }
   }
   service_account {
     email  = google_service_account.mytestvm-sa.email

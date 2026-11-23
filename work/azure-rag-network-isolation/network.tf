@@ -1,5 +1,5 @@
 module "network" {
-  source = "../modules/network"
+  source = "../terraform-modules/network"
 
   location                   = var.location
   resource_group_name        = local.resource_names.resource_group
@@ -15,7 +15,7 @@ module "dns_zones" {
   # for_each = local.enabled_pe_services
   for_each = local.unique_dns_zones
 
-  source              = "../modules/private_dns_zone"
+  source              = "../terraform-modules/private_dns_zone"
   zone_name           = each.value.zone_name
   link_name           = each.value.link_name
   resource_group_name = local.resource_names.resource_group
@@ -25,7 +25,7 @@ module "dns_zones" {
 module "private_endpoint" {
   for_each = local.enabled_pe_services
 
-  source                         = "../modules/private_endpoint"
+  source                         = "../terraform-modules/private_endpoint"
   location                       = var.location
   resource_group_name            = local.resource_names.resource_group
   private_connection_resource_id = lookup(local.service_ids, each.key)
@@ -33,7 +33,7 @@ module "private_endpoint" {
   private_endpoint_name          = each.value.private_endpoint_name
   subnet_id                      = module.network.private_subnet_id
   vnet_id                        = module.network.vnet_id
-  private_dns_zone_id = module.dns_zones[each.value.zone_name].zone_id
+  private_dns_zone_id            = module.dns_zones[each.value.zone_name].zone_id
 
 }
 
