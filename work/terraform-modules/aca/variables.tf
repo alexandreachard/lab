@@ -4,5 +4,8 @@ variable "subnet_id" { type = string }
 variable "min_replicas" { type = number }
 variable "shared_acr_id" { type = string }
 variable "acr_login_server" { type = string }
-variable "fabric_warehouse_name" { type = string }
-variable "fabric_endpoint_address" { type = string }
+variable "app_env" {
+  type        = map(string)
+  description = "Environment variables of the container (no secrets)"
+  default     = {}
+}

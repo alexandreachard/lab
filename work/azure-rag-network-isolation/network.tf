@@ -32,7 +32,6 @@ module "private_endpoint" {
   subresource_names              = each.value.subresource_names
   private_endpoint_name          = each.value.private_endpoint_name
   subnet_id                      = module.network.private_subnet_id
-  vnet_id                        = module.network.vnet_id
   private_dns_zone_id            = module.dns_zones[each.value.zone_name].zone_id
 
 }

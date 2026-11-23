@@ -11,7 +11,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
 module "private_endpoints" {
   source                         = "../terraform-modules/private_endpoint"
   for_each                       = var.services_to_isolate
-  vnet_id                        = var.vnet_id
   private_endpoint_name          = "pe-${each.key}"
   location                       = var.location
   resource_group_name            = var.resource_group_name
