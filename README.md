@@ -10,24 +10,24 @@ Terraform and runbooks from my work (sanitized), my homelab, and what I'm learni
 
 ## Work
 
-| Item | What it is |
-| :-- | :-- |
-| [azure-governance](work/azure-governance) | Management group hierarchy and policy assignments |
-| [azure-private-endpoints](work/azure-private-endpoints) | Private Endpoints with Private DNS Zone integration |
-| [terraform-modules](work/terraform-modules) | Modules for Container Apps, networking, Private DNS Zones, Private Endpoints |
-| [azure-rag-network-isolation](work/azure-rag-network-isolation) | Network isolation of a RAG architecture with Private Endpoints |
-| [azure-subscription-manager](work/azure-subscription-manager) | PowerShell: batch rename subscriptions and move them into management groups |
-| [gcp-network-edge](work/gcp-network-edge) | Site-to-site IPsec VPN, VPC firewall rules and Compute Engine instances on GCP |
-| [gcp-mig-lb-cloud-armor](work/gcp-mig-lb-cloud-armor) | Managed Instance Group behind a load balancer |
-| [netbox](work/netbox) | NetBox prefixes and aggregates managed with Terraform, and updating a containerized NetBox |
+| Item | What it is | Status |
+| :-- | :-- | :-- |
+| [azure-governance](work/azure-governance) | Management groups, team access with Entra groups, Allowed locations policy | Validated |
+| [azure-private-endpoints](work/azure-private-endpoints) | One Private Endpoint per service from a map, with the DNS zone links | From production |
+| [terraform-modules](work/terraform-modules) | Modules for Container Apps, networking, Private DNS Zones, Private Endpoints | From production |
+| [azure-rag-network-isolation](work/azure-rag-network-isolation) | Network isolation of a RAG architecture with Private Endpoints | From production |
+| [azure-subscription-manager](work/azure-subscription-manager) | PowerShell: batch rename subscriptions and move them into management groups | Used once (~50 subscriptions) |
+| [gcp-network-edge](work/gcp-network-edge) | Site-to-site IPsec VPN to on-prem, VPC firewall rules, private VM with IAP and OS Login | From production |
+| [gcp-mig-lb-cloud-armor](work/gcp-mig-lb-cloud-armor) | Reverse proxy MIG behind an HTTPS load balancer, Cloud Armor IP allowlist | From production |
+| [netbox](work/netbox) | NetBox prefixes and aggregates managed with Terraform, and updating a containerized NetBox | From production |
 
 ## Homelab
 
-| Item | What it is |
-| :-- | :-- |
-| [renovate-cronjob](homelab/renovate-cronjob) | Self-hosted Renovate as a Kubernetes CronJob, with Flux and SOPS |
-| [traefik-ingress-tls](homelab/traefik-ingress-tls) | Exposing services on K3s with Traefik and TLS |
-| [cloudflare-tunnel](homelab/cloudflare-tunnel) | Public access through Cloudflare Tunnel, no open port |
+| Item | What it is | Status |
+| :-- | :-- | :-- |
+| [renovate-cronjob](homelab/renovate-cronjob) | Self-hosted Renovate as a Kubernetes CronJob, with Flux and SOPS | Running |
+| [traefik-ingress-tls](homelab/traefik-ingress-tls) | Exposing services on K3s with Traefik and TLS | Outdated: moving to cert-manager |
+| [cloudflare-tunnel](homelab/cloudflare-tunnel) | Public access through Cloudflare Tunnel, no open port | Running |
 
 ## Learning
 
