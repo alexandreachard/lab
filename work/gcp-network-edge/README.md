@@ -8,7 +8,7 @@ Terraform for the edge of a GCP spoke network: a site-to-site IPsec VPN to on-pr
 
 ## Why
 
-At work I build the GCP landing zones with Terraform, with network spoke projects. These pieces come from a production spoke:
+I build the GCP landing zones with Terraform, with network spoke projects. These pieces come from a production spoke:
 - a site-to-site VPN to the on-prem datacenter;
 - MQTT over TLS (8883) behind a load balancer, to collect data from industrial machines;
 - admin SSH through IAP, so no VM needs a public IP;

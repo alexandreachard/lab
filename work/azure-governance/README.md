@@ -5,7 +5,7 @@ Here: a platform / workloads (non-prod, prod) hierarchy, 2 subscriptions attache
 
 ## Why
 
-At work I manage more than 50 subscriptions. Managing them one by one doesn't scale:
+I manage more than 50 subscriptions. Managing them one by one doesn't scale:
 - permissions granted subscription by subscription;
 - several teams that need access to a set of subscriptions;
 - resources deployed in any region.

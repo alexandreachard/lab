@@ -4,7 +4,7 @@ Reverse proxy VMs in a Managed Instance Group, behind a global HTTPS load balanc
 
 ## Why
 
-At work, this reverse proxy was the front door to a web application running on private VMs. Users go through the load balancer, Cloud Armor filters the source IPs, and the proxy VMs forward to the application.
+This reverse proxy was the front door to a web application running on private VMs. Users go through the load balancer, Cloud Armor filters the source IPs, and the proxy VMs forward to the application.
 
 ## What I learned
 

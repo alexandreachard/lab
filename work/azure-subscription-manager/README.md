@@ -4,7 +4,7 @@ PowerShell script that renames a batch of subscriptions (`sub-sandbox-01`, `02`.
 
 ## Why
 
-At work, about 50 new subscriptions were added at the root level, with generic names outside our naming convention.
+About 50 new subscriptions were added at the root level, with generic names outside our naming convention.
 They had to be renamed and moved into a landing zone management group.
 It's a one-time cleanup of existing subscriptions: a script was simpler than importing 50 subscriptions into Terraform.
 
