@@ -13,7 +13,6 @@ This reverse proxy was the front door to a web application running on private VM
 - The backend timeout defaults to 30 seconds. It's set to 24 h here for long requests, but Google doesn't guarantee the TCP connection stays open that long.
 - CMEK disks: the KMS key role (`cryptoKeyEncrypterDecrypter`) goes to the Compute Engine service agent (`service-<PROJECT_NUMBER>@compute-system.iam.gserviceaccount.com`), not to the VM service account.
 - Session affinity `CLIENT_IP` sends a client to the same VM. Google says to use the UTILIZATION balancing mode only with affinity `NONE`.
-- The modules are pinned to old versions (vm 8.0.0, lb-http 6.x), so the google provider is stuck below 5. Upgrading to lb-http 14 changes the module interface.
 
 ## Run it
 
@@ -23,3 +22,7 @@ terraform plan -var-file=terraform.tfvars
 ```
 
 Most variables have no default (project, subnetwork, KMS key, image, sizing, certificates, allowed IPs).
+
+## What I'd change
+
+This code documents the setup as it was in 2023. I left the module versions as they were (vm 8.0.0, lb-http 6.x), so the google provider is stuck below 5. Upgrading to lb-http 14 changes the module interface, so it would be a rewrite, not a version bump.
