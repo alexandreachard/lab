@@ -20,10 +20,10 @@ variable "allowed_locations" {
 
 variable "team_a_group_object_id" {
   type        = string
-  description = "groupd id of team A entra group"
+  description = "Object ID of the Team A Entra ID group"
 }
 
 variable "ops_group_object_id" {
   type        = string
-  description = "groupd id of ops entra group"
+  description = "Object ID of the Ops Entra ID group"
 }
